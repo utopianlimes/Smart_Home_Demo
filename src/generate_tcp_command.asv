@@ -80,13 +80,6 @@ function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
     % gesture class structures
     
     % blinds = struct(blinds_o, blinds_o_up, blinds_b, blinds_b_up);
-
-    %% TODO: 
-    % 1) Finish defining the lookup table
-    % 2) Implement the cell search function
-    %    - Reading matlab doc on cellfun
-    %    - Making sure it returns a logical array
-    
     % Define "look-up table"
     command_carray = {
         blinds_o, blinds_o_up; 
@@ -95,15 +88,16 @@ function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
         }
     
     % presence_idxs = cellfun(() matches(x, sbar_vol))
-    presence_idxs = [1 0]';
+    presence_idxs = [1 0]'
     if ~isempty(presence_idxs)
         carray_row = find(presence_idxs);
         cmd_dict = command_carray{carray_row, 2};
         position = cmd_dict(n);
         postion_ch = convertStringsToChars(position);
         tcp_command = uint8(postion_ch);
-        disp(tcp_command)
-        return
+        % disp(tcp_command)
+        return tcp_command
+    end
 end
 
 %     % if loop identifies gesture class then selects chosen position
