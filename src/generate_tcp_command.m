@@ -1,6 +1,8 @@
 function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
     % This function outputs a command in the form of: %s%D- tcp-ip_address
     load("api_cmd.mat")
+    gesture_class = 'sbar_vol';
+    gesture_amplitude = 10;
     x = convertStringsToChars(gesture_class);
     n = round(gesture_amplitude, 1);    % rounds amplitude to tenth decimal place
     
@@ -91,11 +93,32 @@ function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
     command_carray = {
         blinds_o, blinds_o_up; 
         blinds_b, blinds_b_up;
+        ltg_on, ltg_on_x;
+        ltg_off, ltg_off_x;
+        ltg_dim_raise, ltg_raise_x;
+        ltg_dim_lower, ltg_lower_x;
+        ltg_dim_0, ltg_dim_0_num;
+        ltg_dim_1, ltg_dim_1_num;
+        ltg_dim_2, ltg_dim_2_num;
+        ltg_dim_3, ltg_dim_3_num;
+        ltg_dim_4, ltg_dim_4_num;
+        door, door_pos;
+        hvac_temp, hvac_set;
+        fan, fan_set;
+        tv_power, tv;
+        tv_channel, tv_num;
+        tv_source, tv_src;
+        sbar_pow, sbar_power;
+        sbar_vol, sbar_volume;
         ...
-        }
+        };
     
-    % presence_idxs = cellfun(() matches(x, sbar_vol))
-    presence_idxs = [1 0]';
+    %presence_idxs = cellfun(@matches matches(x, sbar_vol), command_carray);
+    presence_find = find(strcmp(x,command_carray));
+    presence_idxs = zeros(19,1);
+    presence_idxs(presence_find)=1;
+    
+    %presence_idxs = [1 0]';
     if ~isempty(presence_idxs)
         carray_row = find(presence_idxs);
         cmd_dict = command_carray{carray_row, 2};
@@ -104,7 +127,7 @@ function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
         tcp_command = uint8(postion_ch);
         disp(tcp_command)
         return
-end
+    end
 
 %     % if loop identifies gesture class then selects chosen position
 %     if strcmp(x, blinds_o)
