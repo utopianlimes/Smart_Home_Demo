@@ -1,8 +1,9 @@
 function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
     % This function outputs a command in the form of: %s%D- tcp-ip_address
     load("api_cmd.mat")
+    %gesture_class = 'sbar_vol';
+    %gesture_amplitude = 10;
     x = convertStringsToChars(gesture_class);
-    n = round(gesture_amplitude, 1);    % rounds amplitude to tenth decimal place
     
     % gesture classes
     blinds_o = 'blinds_o';
@@ -81,113 +82,70 @@ function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
     
     % blinds = struct(blinds_o, blinds_o_up, blinds_b, blinds_b_up);
 
-    %% TODO: 
-    % 1) Finish defining the lookup table
-    % 2) Implement the cell search function
-    %    - Reading matlab doc on cellfun
-    %    - Making sure it returns a logical array
     
     % Define "look-up table"
     command_carray = {
         blinds_o, blinds_o_up; 
         blinds_b, blinds_b_up;
+        ltg_on, ltg_on_x;
+        ltg_off, ltg_off_x;
+        ltg_dim_raise, ltg_raise_x;
+        ltg_dim_lower, ltg_lower_x;
+        ltg_dim_0, ltg_dim_0_num;
+        ltg_dim_1, ltg_dim_1_num;
+        ltg_dim_2, ltg_dim_2_num;
+        ltg_dim_3, ltg_dim_3_num;
+        ltg_dim_4, ltg_dim_4_num;
+        door, door_pos;
+        hvac_temp, hvac_set;
+        fan, fan_set;
+        tv_power, tv;
+        tv_channel, tv_num;
+        tv_source, tv_src;
+        sbar_pow, sbar_power;
+        sbar_vol, sbar_volume;
         ...
-        }
+        };
     
-    % presence_idxs = cellfun(() matches(x, sbar_vol))
-    presence_idxs = [1 0]';
+    %presence_idxs = cellfun(@matches matches(x, sbar_vol), command_carray);
+    presence_find = find(strcmp(x,command_carray));
+    
+    if isempty(presence_find)
+        warning("command not found")
+        return
+    end
+    presence_idxs = zeros(19,1);
+    presence_idxs(presence_find)=1;
+    
+    %presence_idxs = [1 0]';
     if ~isempty(presence_idxs)
         carray_row = find(presence_idxs);
         cmd_dict = command_carray{carray_row, 2};
-        position = cmd_dict(n);
+            if strcmp(x, hvac_temp)
+            
+                % Rounds the input value to the nearest .0 or .5
+                % Multiply by 2 and round to the nearest integer, divide by
+                % 2 to get the final rounded value
+                n = (round(gesture_amplitude * 2))/2;
+            
+            elseif strcmp(x, sbar_vol)
+                % Round the number to the nearest multiple of 5
+            
+                n = round(gesture_amplitude / 5) * 5;
+            else
+                n = round(gesture_amplitude, 1);    % rounds amplitude to tenth decimal place
+            end
+        try
+            position = cmd_dict(n);
+        catch
+            warning("Invalid value")
+            return
+        end
         postion_ch = convertStringsToChars(position);
         tcp_command = uint8(postion_ch);
-        disp(tcp_command)
+        %disp(tcp_command);
         return
-end
-
-%     % if loop identifies gesture class then selects chosen position
-%     if strcmp(x, blinds_o)
-%         position = blinds.blinds_o(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == blinds_b
-%         position = blinds.blinds_b(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_on
-%         position = ltg_on_x(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-% 
-%     elseif x == ltg_off
-%         position = ltg_off_x(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_raise
-%         position = ltg_raise_x(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_lower
-%         position = ltg_lower_x(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_0
-%         position = ltg_dim_0_num(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_1
-%         position = ltg_dim_1_num(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_2
-%         position = ltg_dim_2_num(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_3
-%         position = ltg_dim_3_num(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == ltg_dim_4
-%         position = ltg_dim_4_num(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == door
-%         position = door_pos(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == hvac_temp
-%         position = hvac_set(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == fan
-%         position = fan_set(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == tv_power
-%         position = tv(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == tv_channel
-%         position = tv_num(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == tv_source
-%         position = tv_src(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == sbar_pow
-%         position = sbar_power(n);
-%         a = convertStringsToChars(position);
-%         tcp_command = uint8(a);
-%     elseif x == sbar_vol
-%         position = sbar_volume(n);
-%     a = convertStringsToChars(position);
-%     tcp_command = uint8(a);
-%     end
-% end
-
-
+    end
 
 % UNUSED CMDS :
 % ATV_RIGHT
