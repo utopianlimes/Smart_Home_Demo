@@ -22,22 +22,26 @@ fbd_state = "Gesture Detected";
 %       the sender code if the sessions are on different machines.
 
 
-    % Create a UDP port object for receiving data on a specific port
-    receiver = udpport("LocalPort", 5000);  % Replace 5000 with your chosen port
-    
-    % Set a timeout for the read operation (in seconds)
-    receiver.Timeout = 5;  % Timeout after 5 seconds (you can adjust this value)
-    
-    % Display status
-    disp('Waiting for UDP message...');
-        
-    % Read all available data (no need to specify the number of bytes)
-    receivedData = read(receiver, 1024, "char");
-    
-    % If we received data, display it
-    disp(['Received data: ' receivedData]);
+% Create a UDP port object for receiving data on a specific port
+receiver = udpport("LocalPort", 5000);  % Replace 5000 with your chosen port
 
+% Set a timeout for the read operation (in seconds)
+receiver.Timeout = 5;  % Timeout after 5 seconds (you can adjust this value)
 
+% Display status
+disp('UDP stage: ')
+disp('\t Waiting for UDP message...');
+    
+% Read all available data (no need to specify the number of bytes)
+receivedData = read(receiver, 1024, "char");
+
+% If we received data, display it
+disp(['Received data: ' receivedData]);
+
+if isempty(receivedData)
+    receivedData = 'emptycommand 0';
+    warning("no command received")
+end
 
 % Clean up the UDP port object
 clear receiver;

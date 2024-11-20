@@ -1,6 +1,12 @@
+%% initializaton
+
+cd(fileparts(matlab.desktop.editor.getActiveFilename));
+load('api_cmd.mat')
+%% 
 %room_handle = connect_to_smart_room();
 %connect_to_fbd();
 %state = get_state(gesture_class);
+state='Idle';
 count = 0;
 while(true)
     switch (state)

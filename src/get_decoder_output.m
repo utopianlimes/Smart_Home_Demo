@@ -29,13 +29,14 @@ receiver = udpport("LocalPort", 5000);  % Replace 5000 with your chosen port
 receiver.Timeout = 5;  % Timeout after 5 seconds (you can adjust this value)
 
 % Display status
-disp('Waiting for UDP message...');
+disp('UDP stage: ')
+fprintf('\tWaiting for UDP message... \n');
     
 % Read all available data (no need to specify the number of bytes)
 receivedData = read(receiver, 1024, "char");
 
 % If we received data, display it
-disp(['Received data: ' receivedData]);
+fprintf('\tReceived data: %s\n', receivedData);
 
 if isempty(receivedData)
     receivedData = 'emptycommand 0';

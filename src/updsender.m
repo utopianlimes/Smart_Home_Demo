@@ -31,7 +31,7 @@ remoteHost = 'localhost';  % Replace with the IP of the receiver if on separate 
 remotePort = 5000;  % Port number where the receiver is listening
 
 % Send data (e.g., a string message)
-dataToSend = 'blinds_b 0.7';
+dataToSend = 'blinds_o 0.2';
 write(sender, dataToSend, "char", remoteHost, remotePort);
 
 % Clean up the UDP port object
