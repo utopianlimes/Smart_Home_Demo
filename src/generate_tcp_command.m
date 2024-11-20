@@ -1,4 +1,5 @@
 function tcp_command = generate_tcp_command(gesture_class, gesture_amplitude)
+tcp_command = "";
     % This function outputs a command in the form of: %s%D- tcp-ip_address
     load("api_cmd.mat")
     %gesture_class = 'sbar_vol';
